@@ -41,6 +41,9 @@ pub use stm32l4::stm32l4x6 as pac;
 #[cfg(feature = "rt")]
 pub use self::pac::interrupt;
 
+#[cfg(feature = "stm32lx6")]
+pub mod adc;
+
 #[cfg(any(
     feature = "stm32l4x1",
     feature = "stm32l4x2",

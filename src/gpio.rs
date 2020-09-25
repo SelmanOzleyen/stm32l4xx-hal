@@ -21,7 +21,9 @@ pub trait GpioExt {
 pub struct Input<MODE> {
     _mode: PhantomData<MODE>,
 }
-
+///  Analog
+#[cfg(feature = "stm32l4x6")]
+pub struct Analog;
 /// Floating input (type state)
 pub struct Floating;
 /// Pulled down input (type state)
@@ -181,13 +183,11 @@ macro_rules! gpio {
 
             use crate::rcc::{AHB2, APB2};
             use super::{
-
                 Alternate, AlternateOD,
                 AF1, AF2, AF3, AF4, AF5, AF6, AF7, AF8, AF9, AF10, AF11, AF12, AF13, AF14, AF15,
                 Floating, GpioExt, Input, OpenDrain, Output, Edge, ExtiPin,
                 PullDown, PullUp, PushPull, State, Speed,
             };
-
             /// GPIO parts
             pub struct Parts {
                 /// Opaque AFRH register
@@ -453,6 +453,37 @@ macro_rules! gpio {
                         pupdr.pupdr().modify(|r, w| unsafe {
                             w.bits((r.bits() & !(0b11 << offset)) | (0b01 << offset))
                         });
+
+                        $PXi { _mode: PhantomData }
+                    }
+                    #[cfg(feature = "st32l4x6")]
+                    /// Configures the pin to operate as an analog pin with adc.
+                    pub fn into_analog_with_adc(
+                        self,
+                        moder: &mut MODER,
+                        pupdr: &mut PUPDR
+                    ) -> $PXi<Analog> {
+                        let offset = 2 * $i;
+
+                        // analog mode
+                        let mode = 0b11;
+                        moder.moder().modify(|r, w| unsafe {
+                            w.bits((r.bits() & !(0b11 << offset)) | (mode << offset))
+                        });
+
+                        pupdr
+                            .pupdr()
+                            .modify(|r, w| unsafe { w.bits(r.bits() & !(0b11 << offset)) });
+
+                        // Required for STM32L47x/L48x devices(RM351).
+                        // using more unsafe version since ascr field is not supported yet.
+                        unsafe {
+                            &(*$GPIOX::ptr()).ascr.modify(|r, w| {
+                                w.bits(r.bits() | 0b1 << $i)
+                            });
+                        };
+                        // not supported (same as above)
+                        // ascr.ascr().modify(|r, w| unsafe { w.bits(r.bits() | 0b1 << $i) });
 
                         $PXi { _mode: PhantomData }
                     }
