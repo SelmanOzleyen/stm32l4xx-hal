@@ -185,7 +185,7 @@ macro_rules! gpio {
             use super::{
                 Alternate, AlternateOD,
                 AF1, AF2, AF3, AF4, AF5, AF6, AF7, AF8, AF9, AF10, AF11, AF12, AF13, AF14, AF15,
-                Floating, GpioExt, Input, OpenDrain, Output, Edge, ExtiPin,
+                Floating, GpioExt, Input, OpenDrain, Output, Edge, ExtiPin, Analog,
                 PullDown, PullUp, PushPull, State, Speed,
             };
             /// GPIO parts
