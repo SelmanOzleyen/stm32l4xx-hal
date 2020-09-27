@@ -1,3 +1,5 @@
+//! Adc
+
 use crate::gpio::gpioa;
 use crate::gpio::gpiob;
 use crate::gpio::gpioc;

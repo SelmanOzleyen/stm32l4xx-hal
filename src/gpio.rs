@@ -456,7 +456,7 @@ macro_rules! gpio {
 
                         $PXi { _mode: PhantomData }
                     }
-                    #[cfg(feature = "st32l4x6")]
+                    #[cfg(feature = "stm32l4x6")]
                     /// Configures the pin to operate as an analog pin with adc.
                     pub fn into_analog_with_adc(
                         self,
